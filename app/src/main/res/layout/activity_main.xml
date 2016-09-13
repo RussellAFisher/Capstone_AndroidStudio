@@ -17,6 +17,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:allowUndo="false"
+        android:onCLick="getInfo"
         android:background="#8439da" />
 
     <TextView
@@ -27,4 +28,14 @@
         android:layout_below="@+id/GPS_Search"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/Value"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/GPS_SearchResults"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

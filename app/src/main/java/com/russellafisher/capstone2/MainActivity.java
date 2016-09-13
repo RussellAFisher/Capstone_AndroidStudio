@@ -28,12 +28,15 @@ import com.android.volley.RequestQueue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.widget.EditText;
+
 
 
 public class MainActivity extends AppCompatActivity {
 
     private Button GPSBtn;
     private TextView GPSResults;
+    private TextView Value;
     private LocationManager locationManager;
     private LocationListener listener;
     public Double latitude;
@@ -46,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         GPSResults = (TextView) findViewById(R.id.GPS_SearchResults);
+        Value = (TextView) findViewById(R.id.Value);
         GPSBtn = (Button) findViewById(R.id.GPS_Search);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -58,12 +62,24 @@ public class MainActivity extends AppCompatActivity {
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
 
-                JsonObjectRequest request = new JsonObjectRequest("https://maps.googleapis.com/maps/api/geocode/json?latlng="+latitude+","+longitude +"&key=AIzaSyDMijTtiaZ5rJz9tT4erNWrYb-s6xyxu80", new Response.Listener<JSONObject>() {
+                JsonObjectRequest request = new JsonObjectRequest("https://fathomless-thicket-83996.herokuapp.com/geocode/json?lat="+latitude+"&lng="+longitude, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try{
-                            String address = response.getJSONArray("results").getJSONObject(0).getString("formatted_address");
-                            GPSResults.setText(address);
+                            String address = response.getJSONObject("SearchResults:searchresults").getJSONObject("response").getJSONObject("results").getJSONObject("result").getJSONObject("address").getString("street");
+                            String city = response.getJSONObject("SearchResults:searchresults").getJSONObject("response").getJSONObject("results").getJSONObject("result").getJSONObject("address").getString("city");
+                            String state = response.getJSONObject("SearchResults:searchresults").getJSONObject("response").getJSONObject("results").getJSONObject("result").getJSONObject("address").getString("state");
+                            String builtYear = response.getJSONObject("SearchResults:searchresults").getJSONObject("response").getJSONObject("results").getJSONObject("result").getString("yearBuilt");
+                            String lotSize = response.getJSONObject("SearchResults:searchresults").getJSONObject("response").getJSONObject("results").getJSONObject("result").getString("lotSizeSqFt");
+                            String sqFeet = response.getJSONObject("SearchResults:searchresults").getJSONObject("response").getJSONObject("results").getJSONObject("result").getString("finishedSqFt");
+                            String bath = response.getJSONObject("SearchResults:searchresults").getJSONObject("response").getJSONObject("results").getJSONObject("result").getString("bathrooms");
+                            String bed = response.getJSONObject("SearchResults:searchresults").getJSONObject("response").getJSONObject("results").getJSONObject("result").getString("bedrooms");
+                            String value = response.getJSONObject("SearchResults:searchresults").getJSONObject("response").getJSONObject("results").getJSONObject("result").getJSONObject("zestimate").getJSONObject("amount").getString("$t");
+
+                            String output = address + ' '+ city + ','+' ' + state;
+                            String values = '$' + value;
+                            GPSResults.setText(output);
+                            Value.setText(values);
 //                            locationManager.removeUpdates(listener);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -127,6 +143,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //noinspection MissingPermission
                 locationManager.requestLocationUpdates("gps", 5000, 0, listener);
+//                Intent intent = new Intent(this, DisplayMessageActivity.class);
+//                EditText editText = (EditText) findViewById(R.id.edit_message);
+//                String message = editText.getText().toString();
+//                intent.putExtra(EXTRA_MESSAGE, message);
+//                startActivity(intent);
             }
         });
     }
